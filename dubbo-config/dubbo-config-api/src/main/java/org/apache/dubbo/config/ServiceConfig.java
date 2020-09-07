@@ -458,13 +458,14 @@ public class ServiceConfig<T> extends ServiceConfigBase<T> {
         }
 
         String scope = url.getParameter(SCOPE_KEY);
-        // don't export when none is configured
+        // don't export when none is configured //配置为none不暴露
         if (!SCOPE_NONE.equalsIgnoreCase(scope)) {
-
+            //配置不是remote的情况下做本地暴露 (配置为remote，则表示只暴露远程服务)
             // export to local if the config is not remote (export to remote only when config is remote)
             if (!SCOPE_REMOTE.equalsIgnoreCase(scope)) {
                 exportLocal(url);
             }
+            //如果配置不是local则暴露为远程服务.(配置为local，则表示只暴露远程服务)
             // export to remote if the config is not local (export to local only when config is local)
             if (!SCOPE_LOCAL.equalsIgnoreCase(scope)) {
                 if (CollectionUtils.isNotEmpty(registryURLs)) {

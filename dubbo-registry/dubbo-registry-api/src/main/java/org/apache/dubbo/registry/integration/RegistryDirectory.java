@@ -80,6 +80,9 @@ import static org.apache.dubbo.rpc.cluster.Constants.ROUTER_KEY;
 
 /**
  * RegistryDirectory
+ *
+ *  注册目录服务， 它的 Invoker 集合是从注册中心获取的， 它实现了
+ * NotifyListener 接口实现了回调接口 notify(List<Url>)。
  */
 public class RegistryDirectory<T> extends DynamicDirectory<T> implements NotifyListener {
     private static final Logger logger = LoggerFactory.getLogger(RegistryDirectory.class);

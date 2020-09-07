@@ -200,6 +200,9 @@ public class RegistryProtocol implements Protocol {
         // FIXME When the provider subscribes, it will affect the scene : a certain JVM exposes the service and call
         //  the same service. Because the subscribed is cached key with the name of the service, it causes the
         //  subscription information to cover.
+        // 订阅override数据
+        // FIXME 提供者订阅时，会影响同一JVM即暴露服务，又引用同一服务的的场景，
+        // 因为subscribed以服务名为缓存的key，导致订阅信息覆盖。
         final URL overrideSubscribeUrl = getSubscribedOverrideUrl(providerUrl);
         final OverrideListener overrideSubscribeListener = new OverrideListener(overrideSubscribeUrl, originInvoker);
         overrideListeners.put(overrideSubscribeUrl, overrideSubscribeListener);

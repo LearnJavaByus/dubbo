@@ -23,6 +23,8 @@ import org.apache.dubbo.rpc.cluster.support.wrapper.AbstractCluster;
 /**
  * {@link FailoverClusterInvoker}
  *
+ * 失败转移，当出现失败，重试其它服务器，通常用于读操作，但重试会带来更长延迟。
+ *
  */
 public class FailoverCluster extends AbstractCluster {
 
