@@ -21,6 +21,8 @@ import com.alibaba.dubbo.common.Node;
 /**
  * Registry. (SPI, Prototype, ThreadSafe)
  *
+ * 把节点以及注册中心服务的方法整合在了这个接口里面
+ *
  * @see com.alibaba.dubbo.registry.RegistryFactory#getRegistry(com.alibaba.dubbo.common.URL)
  * @see com.alibaba.dubbo.registry.support.AbstractRegistry
  */

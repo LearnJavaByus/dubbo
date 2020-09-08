@@ -22,21 +22,21 @@ package com.alibaba.dubbo.common;
 public interface Node {
 
     /**
-     * get url.
+     * get url.  //获得节点地址
      *
      * @return url.
      */
     URL getUrl();
 
     /**
-     * is available.
+     * is available.  //判断节点是否可用
      *
      * @return available.
      */
     boolean isAvailable();
 
     /**
-     * destroy.
+     * destroy.  //销毁节点
      */
     void destroy();
 

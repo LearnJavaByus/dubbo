@@ -23,6 +23,8 @@ import com.alibaba.dubbo.common.extension.SPI;
 /**
  * RegistryFactory. (SPI, Singleton, ThreadSafe)
  *
+ * 注册中心的工厂接口，用来返回注册中心的对象
+ *
  * @see com.alibaba.dubbo.registry.support.AbstractRegistryFactory
  */
 @SPI("dubbo")
@@ -38,6 +40,17 @@ public interface RegistryFactory {
      * 4. Support file=registry.cache local disk file cache.<br>
      * 5. Support the timeout=1000 request timeout setting.<br>
      * 6. Support session=60000 session timeout or expiration settings.<br>
+     *
+     * 连接注册中心.
+     *
+     * 连接注册中心需处理契约：<br>
+     * 1. 当设置check=false时表示不检查连接，否则在连接不上时抛出异常。<br>
+     * 2. 支持URL上的username:password权限认证。<br>
+     * 3. 支持backup=10.20.153.10备选注册中心集群地址。<br>
+     * 4. 支持file=registry.cache本地磁盘文件缓存。<br>
+     * 5. 支持timeout=1000请求超时设置。<br>
+     * 6. 支持session=60000会话超时或过期设置。<br>
+     *
      *
      * @param url Registry address, is not allowed to be empty
      * @return Registry reference, never return empty value
