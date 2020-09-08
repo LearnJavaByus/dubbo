@@ -23,7 +23,7 @@ import com.alibaba.dubbo.common.extension.SPI;
 import java.util.Comparator;
 
 /**
- * OrderComparetor
+ * OrderComparetor  ExtensionLoader类的getActivateExtension方法中被运用到，作为自动激活拓展对象的排序器
  */
 public class ActivateComparator implements Comparator<Object> {
 
@@ -31,6 +31,7 @@ public class ActivateComparator implements Comparator<Object> {
 
     @Override
     public int compare(Object o1, Object o2) {
+        //基本排序
         if (o1 == null && o2 == null) {
             return 0;
         }
@@ -54,6 +55,7 @@ public class ActivateComparator implements Comparator<Object> {
                 }
             }
         }
+        //使用Activate注解的 `after` 和 `before` 属性，排序
         if ((a1.before().length > 0 || a1.after().length > 0
                 || a2.before().length > 0 || a2.after().length > 0)
                 && spiClass != null) {

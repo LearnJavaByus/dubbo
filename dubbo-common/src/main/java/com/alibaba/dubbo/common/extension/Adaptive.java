@@ -27,6 +27,14 @@ import java.lang.annotation.Target;
 /**
  * Provide helpful information for {@link ExtensionLoader} to inject dependency extension instance.
  *
+ *  @Adaptive
+ *   该注解为了保证dubbo在内部调用具体实现的时候不是硬编码来指定引用哪个实现，也就是为了适配一个接口的多种实现，这样做符合模块接口设计的可插拔原则，
+ *   也增加了整个框架的灵活性，<u>该注解也实现了扩展点自动装配的特性</u>。
+ *
+ *   在实现类上面加上@Adaptive注解，表明该实现类是该接口的适配器。
+ *
+ *   在接口方法上加@Adaptive注解，dubbo会动态生成适配器类
+ *
  * @see ExtensionLoader
  * @see URL
  */

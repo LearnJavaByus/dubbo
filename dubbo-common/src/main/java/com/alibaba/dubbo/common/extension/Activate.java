@@ -35,6 +35,10 @@ import java.lang.annotation.Target;
  * SPI provider can call {@link ExtensionLoader#getActivateExtension(URL, String, String)} to find out all activated
  * extensions with the given criteria.
  *
+ * @Activate
+ *扩展点自动激活加载的注解，就是用条件来控制该扩展点实现是否被自动激活加载，在扩展实现类上面使用，<u>实现了扩展点自动激活的特性</u>，
+ * 它可以设置两个参数，分别是group和value。
+ *
  * @see SPI
  * @see URL
  * @see ExtensionLoader

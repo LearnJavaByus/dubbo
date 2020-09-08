@@ -18,6 +18,10 @@ package com.alibaba.dubbo.common.extension;
 
 /**
  * ExtensionFactory
+ *
+ * 该接口是扩展工厂接口类，它本身也是一个扩展接口，有SPI的注解。该工厂接口提供的就是获取实现类的实例，
+ * 它也有两种扩展实现，分别是SpiExtensionFactory和SpringExtensionFactory代表着两种不同方式去获取实例。
+ * 而具体选择哪种方式去获取实现类的实例，则在适配器AdaptiveExtensionFactory中制定了规则。
  */
 @SPI
 public interface ExtensionFactory {
