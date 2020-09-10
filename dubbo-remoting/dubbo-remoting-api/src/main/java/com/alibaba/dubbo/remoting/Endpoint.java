@@ -31,28 +31,28 @@ import java.net.InetSocketAddress;
 public interface Endpoint {
 
     /**
-     * get url.
+     * get url. // 获得该端的url
      *
      * @return url
      */
     URL getUrl();
 
     /**
-     * get channel handler.
+     * get channel handler.  // 获得该端的通道处理器
      *
      * @return channel handler
      */
     ChannelHandler getChannelHandler();
 
     /**
-     * get local address.
+     * get local address. // 获得该端的本地地址
      *
      * @return local address.
      */
     InetSocketAddress getLocalAddress();
 
     /**
-     * send message.
+     * send message.    // 发送消息
      *
      * @param message
      * @throws RemotingException
@@ -60,7 +60,7 @@ public interface Endpoint {
     void send(Object message) throws RemotingException;
 
     /**
-     * send message.
+     * send message.  // 发送消息，sent是是否已经发送的标记
      *
      * @param message
      * @param sent    already sent to socket?
@@ -68,19 +68,19 @@ public interface Endpoint {
     void send(Object message, boolean sent) throws RemotingException;
 
     /**
-     * close the channel.
+     * close the channel.  // 关闭
      */
     void close();
 
     /**
-     * Graceful close the channel.
+     * Graceful close the channel.  // 优雅的关闭，也就是加入了等待时间
      */
     void close(int timeout);
-
+    // 开始关闭
     void startClose();
 
     /**
-     * is closed.
+     * is closed.   // 判断是否已经关闭
      *
      * @return closed
      */

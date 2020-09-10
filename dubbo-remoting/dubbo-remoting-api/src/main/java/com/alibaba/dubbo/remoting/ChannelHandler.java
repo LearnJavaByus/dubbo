@@ -22,6 +22,8 @@ import com.alibaba.dubbo.common.extension.SPI;
 /**
  * ChannelHandler. (API, Prototype, ThreadSafe)
  *
+ * 负责channel中的逻辑处理，并且可以看到这个接口有注解@SPI，是个可扩展接口，到时候都会在下面介绍各类NIO框架的时候会具体讲到它的实现类。
+ *
  * @see com.alibaba.dubbo.remoting.Transporter#bind(com.alibaba.dubbo.common.URL, ChannelHandler)
  * @see com.alibaba.dubbo.remoting.Transporter#connect(com.alibaba.dubbo.common.URL, ChannelHandler)
  */
@@ -29,21 +31,21 @@ import com.alibaba.dubbo.common.extension.SPI;
 public interface ChannelHandler {
 
     /**
-     * on channel connected.
+     * on channel connected.  // 连接该通道
      *
      * @param channel channel.
      */
     void connected(Channel channel) throws RemotingException;
 
     /**
-     * on channel disconnected.
+     * on channel disconnected.  // 断开该通道
      *
      * @param channel channel.
      */
     void disconnected(Channel channel) throws RemotingException;
 
     /**
-     * on message sent.
+     * on message sent.   // 发送给这个通道消息
      *
      * @param channel channel.
      * @param message message.
@@ -51,7 +53,7 @@ public interface ChannelHandler {
     void sent(Channel channel, Object message) throws RemotingException;
 
     /**
-     * on message received.
+     * on message received.  // 从这个通道内接收消息
      *
      * @param channel channel.
      * @param message message.
@@ -59,7 +61,7 @@ public interface ChannelHandler {
     void received(Channel channel, Object message) throws RemotingException;
 
     /**
-     * on exception caught.
+     * on exception caught. // 从这个通道内捕获异常
      *
      * @param channel   channel.
      * @param exception exception.

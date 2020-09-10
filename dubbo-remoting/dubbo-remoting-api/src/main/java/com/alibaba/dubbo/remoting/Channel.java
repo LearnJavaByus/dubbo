@@ -21,7 +21,7 @@ import java.net.InetSocketAddress;
 /**
  * Channel. (API/SPI, Prototype, ThreadSafe)
  *
- *
+ *通道接口，通道是通讯的载体。
  *
  * @see com.alibaba.dubbo.remoting.Client
  * @see com.alibaba.dubbo.remoting.Server#getChannels()
@@ -30,21 +30,21 @@ import java.net.InetSocketAddress;
 public interface Channel extends Endpoint {
 
     /**
-     * get remote address.
+     * get remote address. / 获得远程地址
      *
      * @return remote address.
      */
     InetSocketAddress getRemoteAddress();
 
     /**
-     * is connected.
+     * is connected.  // 判断通道是否连接
      *
      * @return connected
      */
     boolean isConnected();
 
     /**
-     * has attribute.
+     * has attribute. // 判断是否有该key的值
      *
      * @param key key.
      * @return has or has not.
@@ -52,7 +52,7 @@ public interface Channel extends Endpoint {
     boolean hasAttribute(String key);
 
     /**
-     * get attribute.
+     * get attribute. // 获得该key对应的值
      *
      * @param key key.
      * @return value.
@@ -60,7 +60,7 @@ public interface Channel extends Endpoint {
     Object getAttribute(String key);
 
     /**
-     * set attribute.
+     * set attribute. // 添加属性
      *
      * @param key   key.
      * @param value value.
@@ -68,7 +68,7 @@ public interface Channel extends Endpoint {
     void setAttribute(String key, Object value);
 
     /**
-     * remove attribute.
+     * remove attribute.   // 移除属性
      *
      * @param key key.
      */

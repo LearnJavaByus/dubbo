@@ -19,7 +19,7 @@ package com.alibaba.dubbo.remoting;
 import java.net.InetSocketAddress;
 
 /**
- * TimeoutException. (API, Prototype, ThreadSafe)
+ * TimeoutException. (API, Prototype, ThreadSafe)  TimeoutException是超时异常。
  *
  * @export
  * @see com.alibaba.dubbo.remoting.exchange.ResponseFuture#get()

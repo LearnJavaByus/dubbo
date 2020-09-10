@@ -22,7 +22,7 @@ package com.alibaba.dubbo.common;
 public interface Resetable {
 
     /**
-     * reset.
+     * reset.  // 用于根据新传入的 url 属性，重置自己内部的一些属性
      *
      * @param url
      */

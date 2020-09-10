@@ -19,7 +19,7 @@ package com.alibaba.dubbo.remoting;
 import java.net.InetSocketAddress;
 
 /**
- * RemotingException. (API, Prototype, ThreadSafe)
+ * RemotingException. (API, Prototype, ThreadSafe) 是远程通信的基础异常
  *
  * @export
  * @see com.alibaba.dubbo.remoting.exchange.ResponseFuture#get()

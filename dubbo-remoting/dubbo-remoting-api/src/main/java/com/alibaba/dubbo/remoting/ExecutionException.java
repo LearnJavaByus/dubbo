@@ -19,7 +19,7 @@ package com.alibaba.dubbo.remoting;
 import java.net.InetSocketAddress;
 
 /**
- * ReceiveException
+ * ReceiveException ExecutionException是远程通信的执行异常。
  *
  * @export
  */
