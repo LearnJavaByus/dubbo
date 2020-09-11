@@ -52,7 +52,7 @@ public class WrappedChannelHandler implements ChannelHandlerDelegate {
     public WrappedChannelHandler(ChannelHandler handler, URL url) {
         this.handler = handler;
         this.url = url;
-
+        // 设置组件的key
         String componentKey;
         if (Constants.CONSUMER_SIDE.equalsIgnoreCase(url.getParameter(Constants.SIDE_KEY))) {
             componentKey = Constants.CONSUMER_SIDE;
@@ -60,17 +60,21 @@ public class WrappedChannelHandler implements ChannelHandlerDelegate {
                 ExecutorService cExecutor = (ExecutorService) dataStore.get(componentKey, SHARED_CONSUMER_EXECUTOR_PORT);
                 if (cExecutor == null) {
                     cExecutor = (ExecutorService) ExtensionLoader.getExtensionLoader(ThreadPool.class).getAdaptiveExtension().getExecutor(url);
+                    // 把线程池放到dataStore中缓存
                     dataStore.put(componentKey, SHARED_CONSUMER_EXECUTOR_PORT, cExecutor);
                     cExecutor = (ExecutorService) dataStore.get(componentKey, SHARED_CONSUMER_EXECUTOR_PORT);
                 }
                 executor = cExecutor;
             } else {
+                // 创建线程池
                 executor = (ExecutorService) ExtensionLoader.getExtensionLoader(ThreadPool.class).getAdaptiveExtension().getExecutor(url);
+                // 把线程池放到dataStore中缓存
                 dataStore.put(componentKey, Integer.toString(url.getPort()), executor);
             }
         } else {
             componentKey = Constants.EXECUTOR_SERVICE_COMPONENT_KEY;
             executor = (ExecutorService) ExtensionLoader.getExtensionLoader(ThreadPool.class).getAdaptiveExtension().getExecutor(url);
+            // 把线程池放到dataStore中缓存
             dataStore.put(componentKey, Integer.toString(url.getPort()), executor);
         }
     }
@@ -128,7 +132,9 @@ public class WrappedChannelHandler implements ChannelHandlerDelegate {
     }
 
     public ExecutorService getExecutorService() {
+        // 首先返回的不是共享线程池，是该类的线程池
         ExecutorService cexecutor = executor;
+        // 如果该类的线程池关闭或者为空，则返回的是共享线程池
         if (cexecutor == null || cexecutor.isShutdown()) {
             cexecutor = SHARED_EXECUTOR;
         }

@@ -26,7 +26,7 @@ import com.alibaba.dubbo.remoting.Dispatcher;
 public class DirectDispatcher implements Dispatcher {
 
     public static final String NAME = "direct";
-
+    // 直接处理消息，不分发到线程池
     @Override
     public ChannelHandler dispatch(ChannelHandler handler, URL url) {
         return handler;

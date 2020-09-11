@@ -32,14 +32,19 @@ public class MultiMessageHandler extends AbstractChannelHandlerDelegate {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * 当消息是多消息类型时，也就是一次性接收到多条消息的情况，循环去处理消息，当消息是单消息时候，直接交给handler去处理。
+     */
     @Override
     public void received(Channel channel, Object message) throws RemotingException {
+        // 当消息为多消息时 循环交给handler处理接收到当消息
         if (message instanceof MultiMessage) {
             MultiMessage list = (MultiMessage) message;
             for (Object obj : list) {
                 handler.received(channel, obj);
             }
         } else {
+            // 如果是单消息，就直接交给handler处理器
             handler.received(channel, message);
         }
     }
