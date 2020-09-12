@@ -199,7 +199,7 @@ import java.nio.ByteBuffer;
  * Please refer to {@link ChannelBufferInputStream} and {@link
  * ChannelBufferOutputStream}.
  *
- *
+ *该接口继承了Comparable接口，该接口是通道缓存接口，是字节容器
  */
 public interface ChannelBuffer extends Comparable<ChannelBuffer> {
 

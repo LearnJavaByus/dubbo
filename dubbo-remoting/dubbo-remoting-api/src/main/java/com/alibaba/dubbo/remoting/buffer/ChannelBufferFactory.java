@@ -19,7 +19,11 @@ package com.alibaba.dubbo.remoting.buffer;
 import java.nio.ByteBuffer;
 
 public interface ChannelBufferFactory {
-
+    /**
+     * 获得缓冲区实例
+     * @param capacity
+     * @return
+     */
     ChannelBuffer getBuffer(int capacity);
 
     ChannelBuffer getBuffer(byte[] array, int offset, int length);
