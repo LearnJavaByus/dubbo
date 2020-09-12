@@ -33,21 +33,21 @@ import com.alibaba.dubbo.remoting.exchange.support.header.HeaderExchanger;
 public interface Exchanger {
 
     /**
-     * bind.
+     * bind. 绑定一个服务器
      *
-     * @param url
-     * @param handler
-     * @return message server
+     * @param url  服务器url
+     * @param handler  数据交换处理器
+     * @return message server  数据交换服务器
      */
     @Adaptive({Constants.EXCHANGER_KEY})
     ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException;
 
     /**
-     * connect.
+     * connect.  连接一个服务器，也就是创建一个客户端
      *
-     * @param url
-     * @param handler
-     * @return message channel
+     * @param url  服务器url
+     * @param handler  数据交换处理器
+     * @return message channel  返回数据交换客户端
      */
     @Adaptive({Constants.EXCHANGER_KEY})
     ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException;

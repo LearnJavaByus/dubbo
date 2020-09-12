@@ -22,13 +22,13 @@ import com.alibaba.dubbo.remoting.exchange.ExchangeHandler;
 import com.alibaba.dubbo.remoting.telnet.support.TelnetHandlerAdapter;
 
 /**
- * ExchangeHandlerAdapter
+ * ExchangeHandlerAdapter 实现了ExchangeHandler，是信息交换处理器的适配器类。
  */
 public abstract class ExchangeHandlerAdapter extends TelnetHandlerAdapter implements ExchangeHandler {
 
     @Override
     public Object reply(ExchangeChannel channel, Object msg) throws RemotingException {
-        return null;
+        return null;// 直接返回null 交由它的子类选择性的去实现具体的回复请求结果。
     }
 
 }

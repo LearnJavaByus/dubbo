@@ -28,7 +28,8 @@ import com.alibaba.dubbo.remoting.transport.DecodeHandler;
 /**
  * DefaultMessenger
  *
- *
+ *该类继承了Exchanger接口，是Exchanger接口的默认实现，实现了Exchanger接口定义的两个方法，
+ * 分别调用的是Transporters的连接和绑定方法，再利用这这两个方法返回的客户端和服务端实例来创建信息交换的客户端和服务端。
  */
 public class HeaderExchanger implements Exchanger {
 
@@ -36,11 +37,13 @@ public class HeaderExchanger implements Exchanger {
 
     @Override
     public ExchangeClient connect(URL url, ExchangeHandler handler) throws RemotingException {
+        // 用传输层连接返回的client 创建对应的信息交换客户端，默认开启心跳检测
         return new HeaderExchangeClient(Transporters.connect(url, new DecodeHandler(new HeaderExchangeHandler(handler))), true);
     }
 
     @Override
     public ExchangeServer bind(URL url, ExchangeHandler handler) throws RemotingException {
+        // 用传输层绑定返回的server 创建对应的信息交换服务端
         return new HeaderExchangeServer(Transporters.bind(url, new DecodeHandler(new HeaderExchangeHandler(handler))));
     }
 
