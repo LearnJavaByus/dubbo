@@ -41,12 +41,14 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 
 /**
- * MinaServer
+ * MinaServer 是基于mina实现的服务端实现类。
  */
 public class MinaServer extends AbstractServer {
 
     private static final Logger logger = LoggerFactory.getLogger(MinaServer.class);
-
+    /**
+     * 套接字接收者对象
+     */
     private SocketAcceptor acceptor;
 
     public MinaServer(URL url, ChannelHandler handler) throws RemotingException {
@@ -55,16 +57,16 @@ public class MinaServer extends AbstractServer {
 
     @Override
     protected void doOpen() throws Throwable {
-        // set thread pool.
+        // set thread pool.  // 创建套接字接收者对象
         acceptor = new SocketAcceptor(getUrl().getPositiveParameter(Constants.IO_THREADS_KEY, Constants.DEFAULT_IO_THREADS),
                 Executors.newCachedThreadPool(new NamedThreadFactory("MinaServerWorker",
                         true)));
-        // config
+        // config  // 设置配置
         SocketAcceptorConfig cfg = (SocketAcceptorConfig) acceptor.getDefaultConfig();
         cfg.setThreadModel(ThreadModel.MANUAL);
-        // set codec.
+        // set codec. 设置编解码器
         acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new MinaCodecAdapter(getCodec(), getUrl(), this)));
-
+        // 开启服务器
         acceptor.bind(getBindAddress(), new MinaHandler(getUrl(), this));
     }
 
@@ -72,6 +74,7 @@ public class MinaServer extends AbstractServer {
     protected void doClose() throws Throwable {
         try {
             if (acceptor != null) {
+                // 取消绑定，也就是关闭服务器
                 acceptor.unbind(getBindAddress());
             }
         } catch (Throwable e) {
@@ -81,10 +84,12 @@ public class MinaServer extends AbstractServer {
 
     @Override
     public Collection<Channel> getChannels() {
+        // 获得连接到该服务器到所有连接句柄
         Set<IoSession> sessions = acceptor.getManagedSessions(getBindAddress());
         Collection<Channel> channels = new HashSet<Channel>();
         for (IoSession session : sessions) {
             if (session.isConnected()) {
+                // 每次都用一个连接句柄创建一个通道
                 channels.add(MinaChannel.getOrAddChannel(session, getUrl(), this));
             }
         }
@@ -93,7 +98,9 @@ public class MinaServer extends AbstractServer {
 
     @Override
     public Channel getChannel(InetSocketAddress remoteAddress) {
+        // 获得连接到该服务器到所有连接句柄
         Set<IoSession> sessions = acceptor.getManagedSessions(getBindAddress());
+        // 遍历所有句柄，找到要找的通道
         for (IoSession session : sessions) {
             if (session.getRemoteAddress().equals(remoteAddress)) {
                 return MinaChannel.getOrAddChannel(session, getUrl(), this);
