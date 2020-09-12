@@ -27,32 +27,40 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * HelpTelnetHandler
+ * HelpTelnetHandler  该类实现了TelnetHandler接口，封装了help命令的实现
+ *
+ * help分为了需要查看某一个命令的帮助还是查看全部命令的帮助。
  */
 @Activate
 @Help(parameter = "[command]", summary = "Show help.", detail = "Show help.")
 public class HelpTelnetHandler implements TelnetHandler {
-
+    /**
+     * 扩展加载器
+     */
     private final ExtensionLoader<TelnetHandler> extensionLoader = ExtensionLoader.getExtensionLoader(TelnetHandler.class);
 
     @Override
     public String telnet(Channel channel, String message) {
+        // 如果需要查看某一个命令的帮助
         if (message.length() > 0) {
             if (!extensionLoader.hasExtension(message)) {
                 return "No such command " + message;
             }
+            // 获得对应的扩展实现类
             TelnetHandler handler = extensionLoader.getExtension(message);
             Help help = handler.getClass().getAnnotation(Help.class);
             StringBuilder buf = new StringBuilder();
             buf.append("Command:\r\n    ");
+            // 生成命令和帮助信息
             buf.append(message + " " + help.parameter().replace("\r\n", " ").replace("\n", " "));
             buf.append("\r\nSummary:\r\n    ");
             buf.append(help.summary().replace("\r\n", " ").replace("\n", " "));
             buf.append("\r\nDetail:\r\n    ");
             buf.append(help.detail().replace("\r\n", "    \r\n").replace("\n", "    \n"));
             return buf.toString();
-        } else {
+        } else {// 如果查看所有命令的帮助
             List<List<String>> table = new ArrayList<List<String>>();
+            // 获得所有命令的提示信息
             List<TelnetHandler> handlers = extensionLoader.getActivateExtension(channel.getUrl(), "telnet");
             if (handlers != null && !handlers.isEmpty()) {
                 for (TelnetHandler handler : handlers) {

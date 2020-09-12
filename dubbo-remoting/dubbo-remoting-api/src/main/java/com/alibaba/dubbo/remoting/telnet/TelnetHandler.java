@@ -27,7 +27,7 @@ import com.alibaba.dubbo.remoting.RemotingException;
 public interface TelnetHandler {
 
     /**
-     * telnet.
+     * telnet.  处理对应的telnet命令
      *
      * @param channel
      * @param message

@@ -25,21 +25,38 @@ import com.alibaba.dubbo.remoting.RemotingException;
 import com.alibaba.dubbo.remoting.telnet.TelnetHandler;
 import com.alibaba.dubbo.remoting.transport.ChannelHandlerAdapter;
 
+/**
+ * 该类继承了ChannelHandlerAdapter，实现了TelnetHandler接口，是TelnetHandler的适配器类，
+ * 负责在接收到HeaderExchangeHandler发来的telnet命令后分发给对应的TelnetHandler实现类去实现，并且返回命令结果。
+ */
 public class TelnetHandlerAdapter extends ChannelHandlerAdapter implements TelnetHandler {
-
+    /**
+     * 扩展加载器
+     */
     private final ExtensionLoader<TelnetHandler> extensionLoader = ExtensionLoader.getExtensionLoader(TelnetHandler.class);
 
+    /**
+     * 根据对应的命令去让对应的实现类产生命令结果。
+     * @param channel
+     * @param message
+     * @return
+     * @throws RemotingException
+     */
     @Override
     public String telnet(Channel channel, String message) throws RemotingException {
+        // 获得提示键配置，用于nc获取信息时不显示提示符
         String prompt = channel.getUrl().getParameterAndDecoded(Constants.PROMPT_KEY, Constants.DEFAULT_PROMPT);
         boolean noprompt = message.contains("--no-prompt");
         message = message.replace("--no-prompt", "");
         StringBuilder buf = new StringBuilder();
+        // 删除头尾空白符的字符串
         message = message.trim();
         String command;
+        // 获得命令
         if (message.length() > 0) {
             int i = message.indexOf(' ');
             if (i > 0) {
+                // 获得命令
                 command = message.substring(0, i).trim();
                 message = message.substring(i + 1).trim();
             } else {
@@ -50,13 +67,16 @@ public class TelnetHandlerAdapter extends ChannelHandlerAdapter implements Telne
             command = "";
         }
         if (command.length() > 0) {
+            // 如果有该命令的扩展实现类
             if (extensionLoader.hasExtension(command)) {
                 if (commandEnabled(channel.getUrl(), command)) {
                     try {
+                        // 执行相应命令的实现类的telnet
                         String result = extensionLoader.getExtension(command).telnet(channel, message);
                         if (result == null) {
                             return null;
                         }
+                        // 返回结果
                         buf.append(result);
                     } catch (Throwable t) {
                         buf.append(t.getMessage());
@@ -74,6 +94,7 @@ public class TelnetHandlerAdapter extends ChannelHandlerAdapter implements Telne
         if (buf.length() > 0) {
             buf.append("\r\n");
         }
+        // 添加 telnet 提示语
         if (prompt != null && prompt.length() > 0 && !noprompt) {
             buf.append(prompt);
         }
