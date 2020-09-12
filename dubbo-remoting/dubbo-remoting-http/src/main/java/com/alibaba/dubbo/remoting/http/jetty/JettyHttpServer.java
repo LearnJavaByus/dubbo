@@ -35,42 +35,58 @@ import org.mortbay.log.Log;
 import org.mortbay.log.StdErrLog;
 import org.mortbay.thread.QueuedThreadPool;
 
+/**
+ * 该类是基于Jetty来实现服务器的实现类，它继承了AbstractHttpServer
+ */
 public class JettyHttpServer extends AbstractHttpServer {
 
     private static final Logger logger = LoggerFactory.getLogger(JettyHttpServer.class);
-
+    /**
+     * 内嵌的Jetty服务器对象
+     */
     private Server server;
-
+    /**
+     * url对象
+     */
     private URL url;
 
+    /**
+     * 先设置启动参数和配置，然后启动jetty服务器。
+     * @param url
+     * @param handler
+     */
     public JettyHttpServer(URL url, final HttpHandler handler) {
         super(url, handler);
         this.url = url;
         // TODO we should leave this setting to slf4j
         // we must disable the debug logging for production use
+        // 设置日志
         Log.setLog(new StdErrLog());
-        Log.getLog().setDebugEnabled(false);
-
+        Log.getLog().setDebugEnabled(false);// 禁用调试用的日志
+        // 添加http服务器处理器
         DispatcherServlet.addHttpHandler(url.getParameter(Constants.BIND_PORT_KEY, url.getPort()), handler);
-
+        // 获得线程数
         int threads = url.getParameter(Constants.THREADS_KEY, Constants.DEFAULT_THREADS);
+        // 创建线程池
         QueuedThreadPool threadPool = new QueuedThreadPool();
+        // 设置线程池配置
         threadPool.setDaemon(true);
         threadPool.setMaxThreads(threads);
         threadPool.setMinThreads(threads);
-
+        // 创建选择NIO连接器
         SelectChannelConnector connector = new SelectChannelConnector();
-
+        // 获得绑定的ip
         String bindIp = url.getParameter(Constants.BIND_IP_KEY, url.getHost());
         if (!url.isAnyHost() && NetUtils.isValidLocalHost(bindIp)) {
-            connector.setHost(bindIp);
+            connector.setHost(bindIp); // 设置主机地址
         }
+        // 设置端口号
         connector.setPort(url.getParameter(Constants.BIND_PORT_KEY, url.getPort()));
-
+        // 创建Jetty服务器对象
         server = new Server();
-        server.setThreadPool(threadPool);
-        server.addConnector(connector);
-
+        server.setThreadPool(threadPool); // 设置线程池
+        server.addConnector(connector);  // 设置连接器
+        // 添加DispatcherServlet到jetty
         ServletHandler servletHandler = new ServletHandler();
         ServletHolder servletHolder = servletHandler.addServletWithMapping(DispatcherServlet.class, "/*");
         servletHolder.setInitOrder(2);
@@ -80,10 +96,11 @@ public class JettyHttpServer extends AbstractHttpServer {
         // TODO Context.SESSIONS is the best option here?
         Context context = new Context(server, "/", Context.SESSIONS);
         context.setServletHandler(servletHandler);
+        // 添加 ServletContext 对象，到 ServletManager 中
         ServletManager.getInstance().addServletContext(url.getParameter(Constants.BIND_PORT_KEY, url.getPort()), context.getServletContext());
 
         try {
-            server.start();
+            server.start(); // 启动jetty服务器
         } catch (Exception e) {
             throw new IllegalStateException("Failed to start jetty server on " + url.getParameter(Constants.BIND_IP_KEY) + ":" + url.getParameter(Constants.BIND_PORT_KEY) + ", cause: "
                     + e.getMessage(), e);
@@ -94,12 +111,12 @@ public class JettyHttpServer extends AbstractHttpServer {
     public void close() {
         super.close();
 
-        //
+        // 移除 ServletContext 对象
         ServletManager.getInstance().removeServletContext(url.getParameter(Constants.BIND_PORT_KEY, url.getPort()));
 
         if (server != null) {
             try {
-                server.stop();
+                server.stop(); // 停止服务器
             } catch (Exception e) {
                 logger.warn(e.getMessage(), e);
             }
