@@ -45,9 +45,13 @@ import java.util.concurrent.TimeUnit;
 public class GrizzlyServer extends AbstractServer {
 
     private static final Logger logger = LoggerFactory.getLogger(GrizzlyServer.class);
-
+    /**
+     * 连接该服务器的客户端通道集合
+     */
     private final Map<String, Channel> channels = new ConcurrentHashMap<String, Channel>(); // <ip:port, channel>
-
+    /**
+     * 传输实例
+     */
     private TCPNIOTransport transport;
 
     public GrizzlyServer(URL url, ChannelHandler handler) throws RemotingException {
@@ -56,21 +60,27 @@ public class GrizzlyServer extends AbstractServer {
 
     @Override
     protected void doOpen() throws Throwable {
+        // 增加过滤器，来处理信息
         FilterChainBuilder filterChainBuilder = FilterChainBuilder.stateless();
         filterChainBuilder.add(new TransportFilter());
 
         filterChainBuilder.add(new GrizzlyCodecAdapter(getCodec(), getUrl(), this));
         filterChainBuilder.add(new GrizzlyHandler(getUrl(), this));
         TCPNIOTransportBuilder builder = TCPNIOTransportBuilder.newInstance();
+        // 获得线程池配置
         ThreadPoolConfig config = builder.getWorkerThreadPoolConfig();
         config.setPoolName(SERVER_THREAD_POOL_NAME).setQueueLimit(-1);
+        // 获得url配置中线程池类型
         String threadpool = getUrl().getParameter(Constants.THREADPOOL_KEY, Constants.DEFAULT_THREADPOOL);
         if (Constants.DEFAULT_THREADPOOL.equals(threadpool)) {
+            // 优先从url获得线程池的线程数，默认线程数为200
             int threads = getUrl().getPositiveParameter(Constants.THREADS_KEY, Constants.DEFAULT_THREADS);
+            // 设置线程池配置
             config.setCorePoolSize(threads).setMaxPoolSize(threads)
                     .setKeepAliveTime(0L, TimeUnit.SECONDS);
-        } else if ("cached".equals(threadpool)) {
+        } else if ("cached".equals(threadpool)) { // 如果是cached类型的线程池
             int threads = getUrl().getPositiveParameter(Constants.THREADS_KEY, Integer.MAX_VALUE);
+            // 设置核心线程数为0、最大线程数为threads
             config.setCorePoolSize(0).setMaxPoolSize(threads)
                     .setKeepAliveTime(60L, TimeUnit.SECONDS);
         } else {
@@ -78,10 +88,10 @@ public class GrizzlyServer extends AbstractServer {
         }
         builder.setKeepAlive(true).setReuseAddress(false)
                 .setIOStrategy(SameThreadIOStrategy.getInstance());
-        transport = builder.build();
+        transport = builder.build();// 创建transport
         transport.setProcessor(filterChainBuilder.build());
         transport.bind(getBindAddress());
-        transport.start();
+        transport.start(); // 开启服务器
     }
 
     @Override
