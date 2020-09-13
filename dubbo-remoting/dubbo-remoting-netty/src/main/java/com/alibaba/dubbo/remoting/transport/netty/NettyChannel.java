@@ -32,16 +32,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * NettyChannel.
+ * NettyChannel.  该类继承了AbstractChannel类，是基于netty3实现的通道。
  */
 final class NettyChannel extends AbstractChannel {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyChannel.class);
-
+    /**
+     * 通道集合
+     */
     private static final ConcurrentMap<org.jboss.netty.channel.Channel, NettyChannel> channelMap = new ConcurrentHashMap<org.jboss.netty.channel.Channel, NettyChannel>();
-
+    /**
+     * 通道
+     */
     private final org.jboss.netty.channel.Channel channel;
-
+    /**
+     * 属性集合
+     */
     private final Map<String, Object> attributes = new ConcurrentHashMap<String, Object>();
 
     private NettyChannel(org.jboss.netty.channel.Channel channel, URL url, ChannelHandler handler) {
@@ -52,14 +58,24 @@ final class NettyChannel extends AbstractChannel {
         this.channel = channel;
     }
 
+    /**
+     * 该方法是获得通道，当通道在集合中没有的时候，新建一个通道。
+     * @param ch
+     * @param url
+     * @param handler
+     * @return
+     */
     static NettyChannel getOrAddChannel(org.jboss.netty.channel.Channel ch, URL url, ChannelHandler handler) {
         if (ch == null) {
             return null;
         }
+        // 首先从集合中取通道
         NettyChannel ret = channelMap.get(ch);
-        if (ret == null) {
+        if (ret == null) { // 如果为空，则新建
             NettyChannel nc = new NettyChannel(ch, url, handler);
+            // 如果通道连接着
             if (ch.isConnected()) {
+                // 加入集合
                 ret = channelMap.putIfAbsent(ch, nc);
             }
             if (ret == null) {
@@ -97,11 +113,15 @@ final class NettyChannel extends AbstractChannel {
         boolean success = true;
         int timeout = 0;
         try {
+            // 写入数据，发送消息
             ChannelFuture future = channel.write(message);
-            if (sent) {
+            if (sent) {// 如果已经发送过
+                // 获得超时时间
                 timeout = getUrl().getPositiveParameter(Constants.TIMEOUT_KEY, Constants.DEFAULT_TIMEOUT);
+                // 等待timeout的连接时间后查看是否发送成功
                 success = future.await(timeout);
             }
+            // 看是否有异常
             Throwable cause = future.getCause();
             if (cause != null) {
                 throw cause;
@@ -124,12 +144,13 @@ final class NettyChannel extends AbstractChannel {
             logger.warn(e.getMessage(), e);
         }
         try {
+            // 如果通道断开，则移除该通道
             removeChannelIfDisconnected(channel);
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
         }
         try {
-            attributes.clear();
+            attributes.clear();// 清空属性
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
         }
@@ -137,7 +158,7 @@ final class NettyChannel extends AbstractChannel {
             if (logger.isInfoEnabled()) {
                 logger.info("Close netty channel " + channel);
             }
-            channel.close();
+            channel.close();   // 关闭通道
         } catch (Exception e) {
             logger.warn(e.getMessage(), e);
         }

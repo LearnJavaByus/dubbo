@@ -39,16 +39,22 @@ import io.netty.util.concurrent.DefaultThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * NettyClient.
+ * NettyClient.  该类继承了AbstractClient，是基于netty4实现的客户端实现类。
  */
 public class NettyClient extends AbstractClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
-
+    /**
+     * NioEventLoopGroup对象
+     */
     private static final NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup(Constants.DEFAULT_IO_THREADS, new DefaultThreadFactory("NettyClientWorker", true));
-
+    /**
+     * 客户端引导类
+     */
     private Bootstrap bootstrap;
-
+    /**
+     * 通道
+     */
     private volatile Channel channel; // volatile, please copy reference to use
 
     public NettyClient(final URL url, final ChannelHandler handler) throws RemotingException {
@@ -57,26 +63,31 @@ public class NettyClient extends AbstractClient {
 
     @Override
     protected void doOpen() throws Throwable {
+        // 创建一个客户端的通道处理器
         final NettyClientHandler nettyClientHandler = new NettyClientHandler(getUrl(), this);
+        // 创建一个引导类
         bootstrap = new Bootstrap();
+        // 设置可选项
         bootstrap.group(nioEventLoopGroup)
                 .option(ChannelOption.SO_KEEPALIVE, true)
                 .option(ChannelOption.TCP_NODELAY, true)
                 .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
                 //.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getTimeout())
                 .channel(NioSocketChannel.class);
-
+        // 如果连接超时时间小于3s，则设置为3s，也就是说最低的超时时间为3s
         if (getConnectTimeout() < 3000) {
             bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 3000);
         } else {
             bootstrap.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, getConnectTimeout());
         }
-
+        // 创建一个客户端
         bootstrap.handler(new ChannelInitializer() {
 
             @Override
             protected void initChannel(Channel ch) throws Exception {
+                // 编解码器
                 NettyCodecAdapter adapter = new NettyCodecAdapter(getCodec(), getUrl(), NettyClient.this);
+                // 加入责任链
                 ch.pipeline()//.addLast("logging",new LoggingHandler(LogLevel.INFO))//for debug
                         .addLast("decoder", adapter.getDecoder())
                         .addLast("encoder", adapter.getEncoder())

@@ -27,7 +27,9 @@ import java.nio.ByteBuffer;
  * Wrap netty dynamic channel buffer.
  */
 public class NettyBackedChannelBufferFactory implements ChannelBufferFactory {
-
+    /**
+     * 单例
+     */
     private static final NettyBackedChannelBufferFactory INSTANCE = new NettyBackedChannelBufferFactory();
 
     public static ChannelBufferFactory getInstance() {

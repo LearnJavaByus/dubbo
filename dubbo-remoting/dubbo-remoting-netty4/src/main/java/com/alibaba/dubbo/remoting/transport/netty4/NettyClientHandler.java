@@ -27,13 +27,17 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
 
 /**
- * NettyClientHandler
+ * NettyClientHandler 该类继承了ChannelDuplexHandler，是基于netty4实现的客户端通道处理实现类
  */
 @io.netty.channel.ChannelHandler.Sharable
 public class NettyClientHandler extends ChannelDuplexHandler {
-
+    /**
+     * url对象
+     */
     private final URL url;
-
+    /**
+     * 通道
+     */
     private final ChannelHandler handler;
 
     public NettyClientHandler(URL url, ChannelHandler handler) {
@@ -61,10 +65,12 @@ public class NettyClientHandler extends ChannelDuplexHandler {
     @Override
     public void disconnect(ChannelHandlerContext ctx, ChannelPromise future)
             throws Exception {
+        // 获得通道
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.channel(), url, handler);
         try {
-            handler.disconnected(channel);
+            handler.disconnected(channel);// 断开连接
         } finally {
+            // 从集合中移除
             NettyChannel.removeChannelIfDisconnected(ctx.channel());
         }
     }

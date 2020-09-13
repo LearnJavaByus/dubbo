@@ -37,11 +37,17 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Sharable
 public class NettyHandler extends SimpleChannelHandler {
-
+    /**
+     * 通道集合，key是主机地址 ip:port
+     */
     private final Map<String, Channel> channels = new ConcurrentHashMap<String, Channel>(); // <ip:port, channel>
-
+    /**
+     * url对象
+     */
     private final URL url;
-
+    /**
+     * 通道
+     */
     private final ChannelHandler handler;
 
     public NettyHandler(URL url, ChannelHandler handler) {
@@ -61,12 +67,14 @@ public class NettyHandler extends SimpleChannelHandler {
 
     @Override
     public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
+        // 获得通道实例
         NettyChannel channel = NettyChannel.getOrAddChannel(ctx.getChannel(), url, handler);
         try {
             if (channel != null) {
+                // 保存该通道，加入到集合中
                 channels.put(NetUtils.toAddressString((InetSocketAddress) ctx.getChannel().getRemoteAddress()), channel);
             }
-            handler.connected(channel);
+            handler.connected(channel); // 连接
         } finally {
             NettyChannel.removeChannelIfDisconnected(ctx.getChannel());
         }
