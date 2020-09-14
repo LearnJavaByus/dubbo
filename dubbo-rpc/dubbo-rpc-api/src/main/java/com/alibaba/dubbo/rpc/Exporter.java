@@ -17,7 +17,7 @@
 package com.alibaba.dubbo.rpc;
 
 /**
- * Exporter. (API/SPI, Prototype, ThreadSafe)
+ * Exporter. (API/SPI, Prototype, ThreadSafe) 该接口是暴露服务的接口，定义了两个方法分别是获得invoker和取消暴露服务。
  *
  * @see com.alibaba.dubbo.rpc.Protocol#export(Invoker)
  * @see com.alibaba.dubbo.rpc.ExporterListener
@@ -26,14 +26,14 @@ package com.alibaba.dubbo.rpc;
 public interface Exporter<T> {
 
     /**
-     * get invoker.
+     * get invoker. 获得对应的实体域invoker
      *
      * @return invoker
      */
     Invoker<T> getInvoker();
 
     /**
-     * unexport.
+     * unexport.  取消暴露
      * <p>
      * <code>
      * getInvoker().destroy();

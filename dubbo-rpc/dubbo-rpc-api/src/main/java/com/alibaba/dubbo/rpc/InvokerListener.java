@@ -25,7 +25,7 @@ import com.alibaba.dubbo.common.extension.SPI;
 public interface InvokerListener {
 
     /**
-     * The invoker referred
+     * The invoker referred  在服务引用的时候进行监听
      *
      * @param invoker
      * @throws RpcException
@@ -34,7 +34,7 @@ public interface InvokerListener {
     void referred(Invoker<?> invoker) throws RpcException;
 
     /**
-     * The invoker destroyed.
+     * The invoker destroyed.  销毁实体域
      *
      * @param invoker
      * @see com.alibaba.dubbo.rpc.Invoker#destroy()

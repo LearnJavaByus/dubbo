@@ -25,7 +25,7 @@ import com.alibaba.dubbo.common.extension.SPI;
 public interface Filter {
 
     /**
-     * do invoke filter.
+     * do invoke filter.  该方法中对调用进行过滤
      * <p>
      * <code>
      * // before filter

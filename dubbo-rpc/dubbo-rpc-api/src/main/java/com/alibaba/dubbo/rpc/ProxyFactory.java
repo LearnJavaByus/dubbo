@@ -23,12 +23,15 @@ import com.alibaba.dubbo.common.extension.SPI;
 
 /**
  * ProxyFactory. (API/SPI, Singleton, ThreadSafe)
+ *
+ * 该接口是代理工厂接口，它也是个可扩展接口，默认实现javassist，dubbo提供两种动态代理方法分别是javassist/jdk，
+ * 该接口定义了三个方法，前两个方法是通过invoker创建代理，最后一个是通过代理来获得invoker。
  */
 @SPI("javassist")
 public interface ProxyFactory {
 
     /**
-     * create proxy.
+     * create proxy.  创建一个代理
      *
      * @param invoker
      * @return proxy
@@ -37,7 +40,7 @@ public interface ProxyFactory {
     <T> T getProxy(Invoker<T> invoker) throws RpcException;
 
     /**
-     * create proxy.
+     * create proxy.  创建一个代理
      *
      * @param invoker
      * @return proxy
@@ -46,7 +49,7 @@ public interface ProxyFactory {
     <T> T getProxy(Invoker<T> invoker, boolean generic) throws RpcException;
 
     /**
-     * create invoker.
+     * create invoker.  创建一个实体域
      *
      * @param <T>
      * @param proxy

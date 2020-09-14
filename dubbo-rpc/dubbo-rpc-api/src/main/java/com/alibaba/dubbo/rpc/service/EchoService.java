@@ -19,11 +19,14 @@ package com.alibaba.dubbo.rpc.service;
 /**
  * Echo service.
  * @export
+ *
+ * 该接口是回声服务接口，定义了一个一个回声测试的方法，回声测试用于检测服务是否可用，回声测试按照正常请求流程执行，
+ * 能够测试整个调用是否通畅，可用于监控，所有服务自动实现该接口，只需将任意服务强制转化为EchoService，就可以用了。
  */
 public interface EchoService {
 
     /**
-     * echo test.
+     * echo test.  回声测试
      *
      * @param message message.
      * @return message.
