@@ -30,20 +30,33 @@ import org.apache.zookeeper.Watcher.Event.KeeperState;
 import java.util.List;
 
 public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildListener> {
-
+    /**
+     * zk客户端包装类
+     */
     private final ZkClientWrapper client;
-
+    /**
+     * 连接状态
+     */
     private volatile KeeperState state = KeeperState.SyncConnected;
 
     public ZkclientZookeeperClient(URL url) {
         super(url);
         long timeout = url.getParameter(Constants.TIMEOUT_KEY, 30000L);
+        // 新建一个zkclient包装类
         client = new ZkClientWrapper(url.getBackupAddress(), timeout);
+        // 增加状态监听
         client.addListener(new IZkStateListener() {
+            /**
+             * 如果状态改变
+             * @param state
+             * @throws Exception
+             */
             @Override
             public void handleStateChanged(KeeperState state) throws Exception {
                 ZkclientZookeeperClient.this.state = state;
+                // 如果状态变为了断开连接
                 if (state == KeeperState.Disconnected) {
+                    // 则修改状态
                     stateChanged(StateListener.DISCONNECTED);
                 } else if (state == KeeperState.SyncConnected) {
                     stateChanged(StateListener.CONNECTED);
@@ -52,16 +65,18 @@ public class ZkclientZookeeperClient extends AbstractZookeeperClient<IZkChildLis
 
             @Override
             public void handleNewSession() throws Exception {
+                // 状态变为重连
                 stateChanged(StateListener.RECONNECTED);
             }
         });
-        client.start();
+        client.start();// 启动客户端
     }
 
 
     @Override
     public void createPersistent(String path) {
         try {
+            // 递归创建节点
             client.createPersistent(path);
         } catch (ZkNodeExistsException e) {
         }

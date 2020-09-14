@@ -23,7 +23,10 @@ public interface StateListener {
     int CONNECTED = 1;
 
     int RECONNECTED = 2;
-
+    /**
+     * 状态修改
+     * @param connected
+     */
     void stateChanged(int connected);
 
 }

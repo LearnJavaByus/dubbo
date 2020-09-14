@@ -18,8 +18,15 @@ package com.alibaba.dubbo.remoting.zookeeper;
 
 import java.util.List;
 
+/**
+ * 该接口是子节点的监听器，当子节点变化的时候会用到。
+ */
 public interface ChildListener {
-
+    /**
+     * 子节点修改
+     * @param path
+     * @param children
+     */
     void childChanged(String path, List<String> children);
 
 }

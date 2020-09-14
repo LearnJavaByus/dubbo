@@ -39,11 +39,25 @@ import java.util.concurrent.TimeUnit;
  */
 public class ZkClientWrapper {
     Logger logger = LoggerFactory.getLogger(ZkClientWrapper.class);
-
+    /**
+     * 超时事件
+     */
     private long timeout;
+    /**
+     * zk客户端
+     */
     private ZkClient client;
+    /**
+     * 客户端状态
+     */
     private volatile KeeperState state;
+    /**
+     * 客户端线程
+     */
     private ListenableFutureTask<ZkClient> listenableFutureTask;
+    /**
+     * 是否开始
+     */
     private volatile boolean started = false;
 
 
@@ -52,18 +66,22 @@ public class ZkClientWrapper {
         listenableFutureTask = ListenableFutureTask.create(new Callable<ZkClient>() {
             @Override
             public ZkClient call() throws Exception {
+                // 创建zk客户端
                 return new ZkClient(serverAddr, Integer.MAX_VALUE);
             }
         });
     }
 
     public void start() {
+        // 如果客户端没有开启
         if (!started) {
+            // 创建连接线程
             Thread connectThread = new Thread(listenableFutureTask);
             connectThread.setName("DubboZkclientConnector");
             connectThread.setDaemon(true);
-            connectThread.start();
+            connectThread.start();// 开启线程
             try {
+                // 获得zk客户端
                 client = listenableFutureTask.get(timeout, TimeUnit.MILLISECONDS);
             } catch (Throwable t) {
                 logger.error("Timeout! zookeeper server can not be connected in : " + timeout + "ms!", t);
@@ -75,11 +93,13 @@ public class ZkClientWrapper {
     }
 
     public void addListener(final IZkStateListener listener) {
+        // 增加监听器
         listenableFutureTask.addListener(new Runnable() {
             @Override
             public void run() {
                 try {
                     client = listenableFutureTask.get();
+                    // 增加监听器
                     client.subscribeStateChanges(listener);
                 } catch (InterruptedException e) {
                     logger.warn(Thread.currentThread().getName() + " was interrupted unexpectedly, which may cause unpredictable exception!");

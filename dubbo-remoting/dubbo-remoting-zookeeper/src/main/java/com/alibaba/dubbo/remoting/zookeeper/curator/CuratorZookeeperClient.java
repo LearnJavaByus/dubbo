@@ -37,14 +37,20 @@ import org.apache.zookeeper.WatchedEvent;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * 该类是Curator框架提供的一套高级API，简化了ZooKeeper的操作，从而对客户端的实现。
+ */
 public class CuratorZookeeperClient extends AbstractZookeeperClient<CuratorWatcher> {
-
+    /**
+     * 框架式客户端
+     */
     private final CuratorFramework client;
 
     public CuratorZookeeperClient(URL url) {
         super(url);
         try {
             int timeout = url.getParameter(Constants.TIMEOUT_KEY, 5000);
+            // 工厂创建者
             CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
                     .connectString(url.getBackupAddress())
                     .retryPolicy(new RetryNTimes(1, 1000))
@@ -53,20 +59,25 @@ public class CuratorZookeeperClient extends AbstractZookeeperClient<CuratorWatch
             if (authority != null && authority.length() > 0) {
                 builder = builder.authorization("digest", authority.getBytes());
             }
+            // 创建客户端
             client = builder.build();
+            // 添加监听器
             client.getConnectionStateListenable().addListener(new ConnectionStateListener() {
                 @Override
                 public void stateChanged(CuratorFramework client, ConnectionState state) {
+                    // 如果为状态为lost，则改变为未连接
                     if (state == ConnectionState.LOST) {
                         CuratorZookeeperClient.this.stateChanged(StateListener.DISCONNECTED);
                     } else if (state == ConnectionState.CONNECTED) {
+                        // 改变状态为连接
                         CuratorZookeeperClient.this.stateChanged(StateListener.CONNECTED);
                     } else if (state == ConnectionState.RECONNECTED) {
+                        // 改变状态为未连接
                         CuratorZookeeperClient.this.stateChanged(StateListener.RECONNECTED);
                     }
                 }
             });
-            client.start();
+            client.start();// 启动客户端
         } catch (Exception e) {
             throw new IllegalStateException(e.getMessage(), e);
         }

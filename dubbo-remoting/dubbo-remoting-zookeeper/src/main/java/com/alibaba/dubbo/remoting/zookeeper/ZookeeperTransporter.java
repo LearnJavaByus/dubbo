@@ -23,7 +23,11 @@ import com.alibaba.dubbo.common.extension.SPI;
 
 @SPI("curator")
 public interface ZookeeperTransporter {
-
+    /**
+     * 连接服务器
+     * @param url
+     * @return
+     */
     @Adaptive({Constants.CLIENT_KEY, Constants.TRANSPORTER_KEY})
     ZookeeperClient connect(URL url);
 
