@@ -25,10 +25,20 @@ import com.alibaba.dubbo.rpc.RpcException;
  */
 public abstract class ExporterListenerAdapter implements ExporterListener {
 
+    /**
+     * 暴露服务
+     * @param exporter
+     * @throws RpcException
+     */
     @Override
     public void exported(Exporter<?> exporter) throws RpcException {
     }
 
+    /**
+     * 取消暴露服务
+     * @param exporter
+     * @throws RpcException
+     */
     @Override
     public void unexported(Exporter<?> exporter) throws RpcException {
     }
