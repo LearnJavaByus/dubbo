@@ -22,14 +22,18 @@ import com.alibaba.dubbo.rpc.Exporter;
 import com.alibaba.dubbo.rpc.Invoker;
 
 /**
- * AbstractExporter.
+ * AbstractExporter.  该类和AbstractInvoker类似，也是在服务暴露中实现了一些公共方法。
  */
 public abstract class AbstractExporter<T> implements Exporter<T> {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
-
+    /**
+     * 实体域
+     */
     private final Invoker<T> invoker;
-
+    /**
+     * 是否取消暴露服务
+     */
     private volatile boolean unexported = false;
 
     public AbstractExporter(Invoker<T> invoker) {
@@ -49,10 +53,12 @@ public abstract class AbstractExporter<T> implements Exporter<T> {
 
     @Override
     public void unexport() {
-        if (unexported) {
+        if (unexported) { // 如果已经消取消暴露，则之间返回
             return;
         }
+        // 设置为true
         unexported = true;
+        // 销毁该实体域
         getInvoker().destroy();
     }
 
