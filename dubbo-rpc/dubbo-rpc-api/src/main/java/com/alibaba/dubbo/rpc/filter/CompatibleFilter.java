@@ -32,28 +32,44 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 /**
- * CompatibleFilter
+ * CompatibleFilter  该过滤器是做兼容性的过滤器。
  */
 public class CompatibleFilter implements Filter {
 
     private static Logger logger = LoggerFactory.getLogger(CompatibleFilter.class);
 
+    /**
+     * 对于调用链的返回结果，如果返回值类型和返回值不一样的时候，就需要做兼容类型的转化。重新把结果放入RpcResult，返回。
+     * @param invoker    service
+     * @param invocation invocation.
+     * @return
+     * @throws RpcException
+     */
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+        // 调用下一个调用链
         Result result = invoker.invoke(invocation);
+        // 如果方法前面没有$或者结果没有异常
         if (!invocation.getMethodName().startsWith("$") && !result.hasException()) {
             Object value = result.getValue();
             if (value != null) {
                 try {
+                    // 获得方法
                     Method method = invoker.getInterface().getMethod(invocation.getMethodName(), invocation.getParameterTypes());
+                    // 获得返回的数据类型
                     Class<?> type = method.getReturnType();
                     Object newValue;
+                    // 序列化方法
                     String serialization = invoker.getUrl().getParameter(Constants.SERIALIZATION_KEY);
+                    // 如果是json或者fastjson形式
                     if ("json".equals(serialization)
                             || "fastjson".equals(serialization)) {
+                        // 获得方法的泛型返回值类型
                         Type gtype = method.getGenericReturnType();
+                        // 把数据结果进行类型转化
                         newValue = PojoUtils.realize(value, type, gtype);
-                    } else if (!type.isInstance(value)) {
+                    } else if (!type.isInstance(value)) { // 如果value不是type类型
+                        // 如果是pojo，则，转化为type类型，如果不是，则进行兼容类型转化。
                         newValue = PojoUtils.isPojo(type)
                                 ? PojoUtils.realize(value, type)
                                 : CompatibleTypeUtils.compatibleTypeConvert(value, type);
@@ -61,6 +77,7 @@ public class CompatibleFilter implements Filter {
                     } else {
                         newValue = value;
                     }
+                    // 重新设置RpcResult的result
                     if (newValue != value) {
                         result = new RpcResult(newValue);
                     }

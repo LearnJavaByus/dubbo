@@ -29,7 +29,7 @@ import com.alibaba.dubbo.rpc.RpcException;
 import java.util.Map;
 
 /**
- * TokenInvokerFilter
+ * TokenInvokerFilter  该过滤器提供了token的验证功能，关于token的介绍可以查看官方文档。
  */
 @Activate(group = Constants.PROVIDER, value = Constants.TOKEN_KEY)
 public class TokenFilter implements Filter {
@@ -37,15 +37,20 @@ public class TokenFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation inv)
             throws RpcException {
+        // 获得token值
         String token = invoker.getUrl().getParameter(Constants.TOKEN_KEY);
         if (ConfigUtils.isNotEmpty(token)) {
+            // 获得服务类型
             Class<?> serviceType = invoker.getInterface();
+            // 获得附加值
             Map<String, String> attachments = inv.getAttachments();
             String remoteToken = attachments == null ? null : attachments.get(Constants.TOKEN_KEY);
+            // 如果令牌不一样，则抛出异常
             if (!token.equals(remoteToken)) {
                 throw new RpcException("Invalid token! Forbid invoke remote service " + serviceType + " method " + inv.getMethodName() + "() from consumer " + RpcContext.getContext().getRemoteHost() + " to provider " + RpcContext.getContext().getLocalHost());
             }
         }
+        // 调用下一个调用链
         return invoker.invoke(inv);
     }
 
