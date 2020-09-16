@@ -23,12 +23,16 @@ import com.alibaba.dubbo.rpc.protocol.AbstractExporter;
 import java.util.Map;
 
 /**
- * DubboExporter
+ * DubboExporter  该类继承了AbstractExporter，是dubbo协议中独有的服务暴露者。
  */
 public class DubboExporter<T> extends AbstractExporter<T> {
-
+    /**
+     * 服务key
+     */
     private final String key;
-
+    /**
+     * 服务暴露者集合
+     */
     private final Map<String, Exporter<?>> exporterMap;
 
     public DubboExporter(Invoker<T> invoker, String key, Map<String, Exporter<?>> exporterMap) {
@@ -40,7 +44,7 @@ public class DubboExporter<T> extends AbstractExporter<T> {
     @Override
     public void unexport() {
         super.unexport();
-        exporterMap.remove(key);
+        exporterMap.remove(key); // 从集合中移除该key
     }
 
 }
