@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 /**
- * FutureAdapter
+ * FutureAdapter 该类实现了Future接口，是响应的Future适配器。其中是基于ResponseFuture做适配。其中比较简单，我就不多讲解了。
  */
 public class FutureAdapter<V> implements Future<V> {
 

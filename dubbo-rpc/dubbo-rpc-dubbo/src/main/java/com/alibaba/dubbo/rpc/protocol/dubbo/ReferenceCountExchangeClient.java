@@ -30,16 +30,27 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * dubbo protocol support class.
+ * dubbo protocol support class. 该类也是对ExchangeClient的装饰，其中增强了调用次数多功能。
  */
 @SuppressWarnings("deprecation")
 final class ReferenceCountExchangeClient implements ExchangeClient {
-
+    /**
+     * url对象
+     */
     private final URL url;
+    /**
+     * 计数
+     */
     private final AtomicInteger refenceCount = new AtomicInteger(0);
 
     //    private final ExchangeHandler handler;
+    /**
+     * 延迟连接客户端集合
+     */
     private final ConcurrentMap<String, LazyConnectExchangeClient> ghostClientMap;
+    /**
+     * 客户端对象
+     */
     private ExchangeClient client;
 
 
@@ -163,19 +174,21 @@ final class ReferenceCountExchangeClient implements ExchangeClient {
         client.startClose();
     }
 
-    // ghost client
+    // ghost client 该方法是用延迟连接替代，该方法在close方法中被调用。
     private LazyConnectExchangeClient replaceWithLazyClient() {
         // this is a defensive operation to avoid client is closed by accident, the initial state of the client is false
+        // 设置延迟连接初始化状态、是否重连、是否已经重连等配置
         URL lazyUrl = url.addParameter(Constants.LAZY_CONNECT_INITIAL_STATE_KEY, Boolean.FALSE)
                 .addParameter(Constants.RECONNECT_KEY, Boolean.FALSE)
                 .addParameter(Constants.SEND_RECONNECT_KEY, Boolean.TRUE.toString())
                 .addParameter("warning", Boolean.TRUE.toString())
                 .addParameter(LazyConnectExchangeClient.REQUEST_WITH_WARNING_KEY, true)
                 .addParameter("_client_memo", "referencecounthandler.replacewithlazyclient");
-
+        // 获得服务地址
         String key = url.getAddress();
-        // in worst case there's only one ghost connection.
+        // in worst case there's only one ghost connection. // 从集合中获取客户端
         LazyConnectExchangeClient gclient = ghostClientMap.get(key);
+        // 如果对应等客户端不存在或者已经关闭连接，则重新创建一个延迟连接等客户端，并且放入集合
         if (gclient == null || gclient.isClosed()) {
             gclient = new LazyConnectExchangeClient(lazyUrl, client.getExchangeHandler());
             ghostClientMap.put(key, gclient);
