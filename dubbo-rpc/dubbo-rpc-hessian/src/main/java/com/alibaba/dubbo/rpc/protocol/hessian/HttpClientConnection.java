@@ -30,16 +30,24 @@ import java.io.OutputStream;
 import java.net.URL;
 
 /**
- * HttpClientConnection
+ * HttpClientConnection  该类是基于HttpClient封装来实现HessianConnection接口，其中逻辑比较简单。
  */
 public class HttpClientConnection implements HessianConnection {
-
+    /**
+     * http客户端对象
+     */
     private final HttpClient httpClient;
-
+    /**
+     * 字节输出流
+     */
     private final ByteArrayOutputStream output;
-
+    /**
+     * http post请求对象
+     */
     private final HttpPost request;
-
+    /**
+     * http 响应对象
+     */
     private volatile HttpResponse response;
 
     public HttpClientConnection(HttpClient httpClient, URL url) {
@@ -48,6 +56,11 @@ public class HttpClientConnection implements HessianConnection {
         this.request = new HttpPost(url.toString());
     }
 
+    /**
+     * 增加协议头
+     * @param key
+     * @param value
+     */
     @Override
     public void addHeader(String key, String value) {
         request.addHeader(new BasicHeader(key, value));
@@ -58,12 +71,20 @@ public class HttpClientConnection implements HessianConnection {
         return output;
     }
 
+    /**
+     * 发送请求
+     * @throws IOException
+     */
     @Override
     public void sendRequest() throws IOException {
         request.setEntity(new ByteArrayEntity(output.toByteArray()));
         this.response = httpClient.execute(request);
     }
 
+    /**
+     * 获得请求后的状态码
+     * @return
+     */
     @Override
     public int getStatusCode() {
         return response == null || response.getStatusLine() == null ? 0 : response.getStatusLine().getStatusCode();

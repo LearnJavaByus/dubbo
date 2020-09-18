@@ -30,24 +30,36 @@ import java.net.URL;
 
 /**
  * HttpClientConnectionFactory
+ *
+ * 该类实现了HessianConnectionFactory接口，是创建HttpClientConnection的工厂类。该类的实现跟DubboHessianURLConnectionFactory类类似，
+ * 但是DubboHessianURLConnectionFactory是标准的Hessian接口调用会采用的工厂类，而HttpClientConnectionFactory是Dubbo 的 Hessian 协议调用。
+ * 当然Dubbo 的 Hessian 协议也是基于http的。
  */
 public class HttpClientConnectionFactory implements HessianConnectionFactory {
 
+    /**
+     * httpClient对象
+     */
     private HttpClient httpClient;
 
     @Override
     public void setHessianProxyFactory(HessianProxyFactory factory) {
+        // 设置连接超时时间
         RequestConfig requestConfig = RequestConfig.custom()
                 .setConnectionRequestTimeout((int) factory.getConnectTimeout())
                 .setSocketTimeout((int) factory.getReadTimeout())
                 .build();
+        // 设置读取数据时阻塞链路的超时时间
         httpClient = HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
     }
 
     @Override
     public HessianConnection open(URL url) throws IOException {
+        // 创建一个HttpClientConnection实例
         HttpClientConnection httpClientConnection = new HttpClientConnection(httpClient, url);
+        // 获得上下文，用来获得附加值
         RpcContext context = RpcContext.getContext();
+        // 遍历附加值，放入到协议头里面
         for (String key : context.getAttachments().keySet()) {
             httpClientConnection.addHeader(Constants.DEFAULT_EXCHANGER + key, context.getAttachment(key));
         }
