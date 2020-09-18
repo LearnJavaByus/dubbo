@@ -27,27 +27,38 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 该类继承了RemoteInvocation类，是在RemoteInvocation上增加了泛化调用的参数设置，以及增加了dubbo本身需要的附加值设置。
+ */
 public class HttpRemoteInvocation extends RemoteInvocation {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * dubbo的附加值名称
+     */
     private static final String dubboAttachmentsAttrName = "dubbo.attachments";
 
     public HttpRemoteInvocation(MethodInvocation methodInvocation) {
         super(methodInvocation);
+        // 把附加值加入到会话域的属性里面
         addAttribute(dubboAttachmentsAttrName, new HashMap<String, String>(RpcContext.getContext().getAttachments()));
     }
 
     @Override
     public Object invoke(Object targetObject) throws NoSuchMethodException, IllegalAccessException,
             InvocationTargetException {
+        // 获得上下文
         RpcContext context = RpcContext.getContext();
+        // 获得附加值
         context.setAttachments((Map<String, String>) getAttribute(dubboAttachmentsAttrName));
-
+        // 泛化标志
         String generic = (String) getAttribute(Constants.GENERIC_KEY);
+        // 如果不为空，则设置泛化标志
         if (StringUtils.isNotEmpty(generic)) {
             context.setAttachment(Constants.GENERIC_KEY, generic);
         }
         try {
+            // 调用下一个调用链
             return super.invoke(targetObject);
         } finally {
             context.setAttachments(null);

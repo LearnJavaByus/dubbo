@@ -28,12 +28,16 @@ import com.alibaba.dubbo.rpc.protocol.AbstractInvoker;
 import java.util.Map;
 
 /**
- * InjvmInvoker
+ * InjvmInvoker  该类继承了AbstractInvoker类，是本地调用的invoker实现
  */
 class InjvmInvoker<T> extends AbstractInvoker<T> {
-
+    /**
+     * 服务key
+     */
     private final String key;
-
+    /**
+     * 暴露者集合
+     */
     private final Map<String, Exporter<?>> exporterMap;
 
     InjvmInvoker(Class<T> type, URL url, String key, Map<String, Exporter<?>> exporterMap) {
@@ -42,6 +46,10 @@ class InjvmInvoker<T> extends AbstractInvoker<T> {
         this.exporterMap = exporterMap;
     }
 
+    /**
+     * 服务是否活跃
+     * @return
+     */
     @Override
     public boolean isAvailable() {
         InjvmExporter<?> exporter = (InjvmExporter<?>) exporterMap.get(key);
@@ -52,13 +60,23 @@ class InjvmInvoker<T> extends AbstractInvoker<T> {
         }
     }
 
+    /**
+     * invoke方法
+     * @param invocation
+     * @return
+     * @throws Throwable
+     */
     @Override
     public Result doInvoke(Invocation invocation) throws Throwable {
+        // 获得暴露者
         Exporter<?> exporter = InjvmProtocol.getExporter(exporterMap, getUrl());
+        // 如果为空，则抛出异常
         if (exporter == null) {
             throw new RpcException("Service [" + key + "] not found.");
         }
+        // 设置远程地址为127.0.0.1
         RpcContext.getContext().setRemoteAddress(NetUtils.LOCALHOST, 0);
+        // 调用下一个调用链
         return exporter.getInvoker().invoke(invocation);
     }
 }
