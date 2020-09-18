@@ -16,6 +16,9 @@
  */
 package com.alibaba.dubbo.rpc.protocol.thrift;
 
+/**
+ * 类实现了ClassNameGenerator接口，是Thrift相关的类名生成实现。
+ */
 public class ThriftClassNameGenerator implements ClassNameGenerator {
 
     public static final String NAME = "thrift";

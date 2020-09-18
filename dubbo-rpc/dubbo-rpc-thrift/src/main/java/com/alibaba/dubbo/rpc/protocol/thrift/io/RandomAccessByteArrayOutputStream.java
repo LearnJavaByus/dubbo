@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
-
+//该类是随机访问数组的输出流
 public class RandomAccessByteArrayOutputStream extends OutputStream {
 
     protected byte buffer[];

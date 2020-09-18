@@ -16,6 +16,9 @@
  */
 package com.alibaba.dubbo.rpc.protocol.thrift;
 
+/**
+ * 该类实现了ClassNameGenerator接口，是dubbo相关的类名生成实现。
+ */
 public class DubboClassNameGenerator implements ClassNameGenerator {
 
     public static final String NAME = "dubbo";
