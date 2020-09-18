@@ -18,16 +18,28 @@ package com.alibaba.dubbo.rpc.protocol.rest;
 
 import com.alibaba.dubbo.common.URL;
 
+/***
+ * 该接口是rest协议的服务器接口。定义了服务器相关的方法。
+ */
 public interface RestServer {
-
+    /**
+     * 服务器启动
+     * @param url
+     */
     void start(URL url);
 
     /**
+     * 部署服务器
      * @param resourceDef it could be either resource interface or resource impl
      */
     void deploy(Class resourceDef, Object resourceInstance, String contextPath);
-
+    /**
+     * 取消服务器部署
+     * @param resourceDef
+     */
     void undeploy(Class resourceDef);
-
+    /**
+     * 停止服务器
+     */
     void stop();
 }

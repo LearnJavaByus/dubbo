@@ -30,6 +30,7 @@ import java.util.Map;
 /**
  * Netty server can't support @Context injection of servlet objects since it's not a servlet container
  *
+ * 该类继承了BaseRestServer，当配置了netty作为远程通信的实现时，实现的服务器。
  */
 public class NettyServer extends BaseRestServer {
 
@@ -37,18 +38,27 @@ public class NettyServer extends BaseRestServer {
 
     @Override
     protected void doStart(URL url) {
+        // 获得ip
         String bindIp = url.getParameter(Constants.BIND_IP_KEY, url.getHost());
         if (!url.isAnyHost() && NetUtils.isValidLocalHost(bindIp)) {
+            // 设置服务的ip
             server.setHostname(bindIp);
         }
+        // 设置端口
         server.setPort(url.getParameter(Constants.BIND_PORT_KEY, url.getPort()));
+        // 通道选项集合
         Map<ChannelOption, Object> channelOption = new HashMap<ChannelOption, Object>();
+        // 保持连接检测对方主机是否崩溃
         channelOption.put(ChannelOption.SO_KEEPALIVE, url.getParameter(Constants.KEEP_ALIVE_KEY, Constants.DEFAULT_KEEP_ALIVE));
+        // 设置配置
         server.setChildChannelOptions(channelOption);
+        // 设置线程数，默认为200
         server.setExecutorThreadCount(url.getParameter(Constants.THREADS_KEY, Constants.DEFAULT_THREADS));
+        // 设置核心线程数
         server.setIoWorkerCount(url.getParameter(Constants.IO_THREADS_KEY, Constants.DEFAULT_IO_THREADS));
+        // 设置最大的请求数
         server.setMaxRequestSize(url.getParameter(Constants.PAYLOAD_KEY, Constants.DEFAULT_PAYLOAD));
-        server.start();
+        server.start();// 启动服务
     }
 
     @Override
