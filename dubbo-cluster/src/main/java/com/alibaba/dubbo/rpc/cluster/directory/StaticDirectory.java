@@ -26,7 +26,7 @@ import java.util.List;
 
 /**
  * StaticDirectory
- *
+ *静态 Directory 实现类，将传入的 invokers 集合，封装成静态的 Directory 对象。
  */
 public class StaticDirectory<T> extends AbstractDirectory<T> {
 
@@ -61,6 +61,7 @@ public class StaticDirectory<T> extends AbstractDirectory<T> {
         if (isDestroyed()) {
             return false;
         }
+        // 遍历invokers，如果有一个可用，则可用
         for (Invoker<T> invoker : invokers) {
             if (invoker.isAvailable()) {
                 return true;
@@ -75,9 +76,11 @@ public class StaticDirectory<T> extends AbstractDirectory<T> {
             return;
         }
         super.destroy();
+        // 遍历invokers，销毁所有的invoker
         for (Invoker<T> invoker : invokers) {
             invoker.destroy();
         }
+        // 清除集合
         invokers.clear();
     }
 

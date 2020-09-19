@@ -27,6 +27,7 @@ import java.util.Set;
 
 /**
  * AbstractOverrideConfigurator
+ * 该类实现了Configurator接口，是配置规则 抽象类，配置有两种方式，一种是没有时添加配置，这种暂时没有用到，另一种是覆盖配置。
  *
  */
 public abstract class AbstractConfigurator implements Configurator {
@@ -56,6 +57,7 @@ public abstract class AbstractConfigurator implements Configurator {
             return url;
         }
         // If override url has port, means it is a provider address. We want to control a specific provider with this override url, it may take effect on the specific provider instance or on consumers holding this provider instance.
+        // 如果覆盖url具有端口，则表示它是提供者地址。我们希望使用此覆盖URL控制特定提供程序，它可以在提供端生效 也可以在消费端生效。
         if (configuratorUrl.getPort() != 0) {
             if (url.getPort() == configuratorUrl.getPort()) {
                 return configureIfMatch(url.getHost(), url);
@@ -63,9 +65,12 @@ public abstract class AbstractConfigurator implements Configurator {
         } else {// override url don't have a port, means the ip override url specify is a consumer address or 0.0.0.0
             // 1.If it is a consumer ip address, the intention is to control a specific consumer instance, it must takes effect at the consumer side, any provider received this override url should ignore;
             // 2.If the ip is 0.0.0.0, this override url can be used on consumer, and also can be used on provider
+            // 配置规则，URL 没有端口，意味着override 输入消费端地址 或者 0.0.0.0
             if (url.getParameter(Constants.SIDE_KEY, Constants.PROVIDER).equals(Constants.CONSUMER)) {
+                // 如果它是一个消费者ip地址，目的是控制一个特定的消费者实例，它必须在消费者一方生效，任何提供者收到这个覆盖url应该忽略;
                 return configureIfMatch(NetUtils.getLocalHost(), url);// NetUtils.getLocalHost is the ip address consumer registered to registry.
             } else if (url.getParameter(Constants.SIDE_KEY, Constants.CONSUMER).equals(Constants.PROVIDER)) {
+                // 如果ip为0.0.0.0，则此覆盖url可以在使用者上使用，也可以在提供者上使用
                 return configureIfMatch(Constants.ANYHOST_VALUE, url);// take effect on all providers, so address must be 0.0.0.0, otherwise it won't flow to this if branch
             }
         }
@@ -73,21 +78,27 @@ public abstract class AbstractConfigurator implements Configurator {
     }
 
     private URL configureIfMatch(String host, URL url) {
+        // 匹配 Host
         if (Constants.ANYHOST_VALUE.equals(configuratorUrl.getHost()) || host.equals(configuratorUrl.getHost())) {
             String configApplication = configuratorUrl.getParameter(Constants.APPLICATION_KEY,
                     configuratorUrl.getUsername());
             String currentApplication = url.getParameter(Constants.APPLICATION_KEY, url.getUsername());
+            // 匹配 "application"
             if (configApplication == null || Constants.ANY_VALUE.equals(configApplication)
                     || configApplication.equals(currentApplication)) {
                 Set<String> conditionKeys = new HashSet<String>();
+                // 配置 URL 中的条件 KEYS 集合。其中下面四个 KEY ，不算是条件，而是内置属性。考虑到下面要移除，所以添加到该集合中。
                 conditionKeys.add(Constants.CATEGORY_KEY);
                 conditionKeys.add(Constants.CHECK_KEY);
                 conditionKeys.add(Constants.DYNAMIC_KEY);
                 conditionKeys.add(Constants.ENABLED_KEY);
+                // 判断传入的 url 是否匹配配置规则 URL 的条件。
                 for (Map.Entry<String, String> entry : configuratorUrl.getParameters().entrySet()) {
                     String key = entry.getKey();
                     String value = entry.getValue();
+                    // 除了 "application" 和 "side" 之外，带有 `"~"` 开头的 KEY ，也是条件。
                     if (key.startsWith("~") || Constants.APPLICATION_KEY.equals(key) || Constants.SIDE_KEY.equals(key)) {
+                        // 添加搭配条件集合
                         conditionKeys.add(key);
                         if (value != null && !Constants.ANY_VALUE.equals(value)
                                 && !value.equals(url.getParameter(key.startsWith("~") ? key.substring(1) : key))) {
@@ -95,6 +106,7 @@ public abstract class AbstractConfigurator implements Configurator {
                         }
                     }
                 }
+                // 移除条件 KEYS 集合，并配置到 URL 中
                 return doConfigure(url, configuratorUrl.removeParameters(conditionKeys));
             }
         }
@@ -114,8 +126,9 @@ public abstract class AbstractConfigurator implements Configurator {
         if (o == null) {
             return -1;
         }
-
+        // host 升序
         int ipCompare = getUrl().getHost().compareTo(o.getUrl().getHost());
+        // 如果host相同，则根据priority降序来对比
         if (ipCompare == 0) {//host is the same, sort by priority
             int i = getUrl().getParameter(Constants.PRIORITY_KEY, 0),
                     j = o.getUrl().getParameter(Constants.PRIORITY_KEY, 0);
