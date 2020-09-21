@@ -24,6 +24,8 @@ import com.alibaba.dubbo.rpc.cluster.Directory;
 /**
  * mock impl
  *
+ * 该类是服务降级的装饰器类，对Cluster进行了功能增强，增强了服务降级的功能。
+ *
  */
 public class MockClusterWrapper implements Cluster {
 
@@ -35,6 +37,7 @@ public class MockClusterWrapper implements Cluster {
 
     @Override
     public <T> Invoker<T> join(Directory<T> directory) throws RpcException {
+        // 创建MockClusterInvoker
         return new MockClusterInvoker<T>(directory,
                 this.cluster.join(directory));
     }
