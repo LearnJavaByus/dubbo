@@ -19,12 +19,12 @@ package com.alibaba.dubbo.common.serialize;
 import java.io.IOException;
 
 /**
- * Data output.
+ * Data output. 该接口是数据输出接口，可以看到定义了向 InputStream 中，写入基本类型的数据。
  */
 public interface DataOutput {
 
     /**
-     * Write boolean.
+     * Write boolean. 输出boolean类型
      *
      * @param v value.
      * @throws IOException
@@ -32,7 +32,7 @@ public interface DataOutput {
     void writeBool(boolean v) throws IOException;
 
     /**
-     * Write byte.
+     * Write byte.  输出byte类型
      *
      * @param v value.
      * @throws IOException
@@ -40,7 +40,7 @@ public interface DataOutput {
     void writeByte(byte v) throws IOException;
 
     /**
-     * Write short.
+     * Write short.  输出short类型
      *
      * @param v value.
      * @throws IOException
@@ -48,7 +48,7 @@ public interface DataOutput {
     void writeShort(short v) throws IOException;
 
     /**
-     * Write integer.
+     * Write integer. 输出integer类型
      *
      * @param v value.
      * @throws IOException
@@ -56,7 +56,7 @@ public interface DataOutput {
     void writeInt(int v) throws IOException;
 
     /**
-     * Write long.
+     * Write long.  输出long类型
      *
      * @param v value.
      * @throws IOException
@@ -64,7 +64,7 @@ public interface DataOutput {
     void writeLong(long v) throws IOException;
 
     /**
-     * Write float.
+     * Write float.  输出float类型
      *
      * @param v value.
      * @throws IOException
@@ -72,7 +72,7 @@ public interface DataOutput {
     void writeFloat(float v) throws IOException;
 
     /**
-     * Write double.
+     * Write double.  输出double类型
      *
      * @param v value.
      * @throws IOException
@@ -80,7 +80,7 @@ public interface DataOutput {
     void writeDouble(double v) throws IOException;
 
     /**
-     * Write string.
+     * Write string.  输出string类型
      *
      * @param v value.
      * @throws IOException
@@ -88,7 +88,7 @@ public interface DataOutput {
     void writeUTF(String v) throws IOException;
 
     /**
-     * Write byte array.
+     * Write byte array. 输出byte数组
      *
      * @param v value.
      * @throws IOException
@@ -96,7 +96,7 @@ public interface DataOutput {
     void writeBytes(byte[] v) throws IOException;
 
     /**
-     * Write byte array.
+     * Write byte array. 输出byte数组中部分数据
      *
      * @param v   value.
      * @param off offset.
@@ -106,7 +106,7 @@ public interface DataOutput {
     void writeBytes(byte[] v, int off, int len) throws IOException;
 
     /**
-     * Flush buffer.
+     * Flush buffer.  刷新缓冲区
      *
      * @throws IOException
      */

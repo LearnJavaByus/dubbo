@@ -26,26 +26,28 @@ import java.io.OutputStream;
 
 /**
  * Serialization. (SPI, Singleton, ThreadSafe)
+ *
+ * 该接口是序列化接口，该接口也是可扩展接口，默认是使用hessian2序列化方式。其中定义了序列化和反序列化等方法
  */
 @SPI("hessian2")
 public interface Serialization {
 
     /**
-     * get content type id
+     * get content type id  获得内容类型编号
      *
      * @return content type id
      */
     byte getContentTypeId();
 
     /**
-     * get content type
+     * get content type  获得内容类型名
      *
      * @return content type
      */
     String getContentType();
 
     /**
-     * create serializer
+     * create serializer  创建 ObjectOutput 对象，序列化输出到 OutputStream
      *
      * @param url
      * @param output
@@ -56,7 +58,7 @@ public interface Serialization {
     ObjectOutput serialize(URL url, OutputStream output) throws IOException;
 
     /**
-     * create deserializer
+     * create deserializer  创建 ObjectInput 对象，从 InputStream 反序列化
      *
      * @param url
      * @param input

@@ -25,14 +25,14 @@ import java.lang.reflect.Type;
 public interface ObjectInput extends DataInput {
 
     /**
-     * read object.
+     * read object. 读取object类型数据
      *
      * @return object.
      */
     Object readObject() throws IOException, ClassNotFoundException;
 
     /**
-     * read object.
+     * read object. 根据class类型读取object类型数据
      *
      * @param cls object type.
      * @return object.
@@ -40,7 +40,7 @@ public interface ObjectInput extends DataInput {
     <T> T readObject(Class<T> cls) throws IOException, ClassNotFoundException;
 
     /**
-     * read object.
+     * read object.  取object类型数据
      *
      * @param cls object type.
      * @return object.

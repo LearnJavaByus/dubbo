@@ -21,12 +21,17 @@ import com.esotericsoftware.kryo.Serializer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * 该类提供一个序列化统一的注册中心，其实就是封装了可序列化类的集合
+ */
 public abstract class SerializableClassRegistry {
-
+    /**
+     * 可序列化类类的集合
+     */
     private static final Map<Class, Object> registrations = new LinkedHashMap<Class, Object>();
 
     /**
-     * only supposed to be called at startup time
+     * only supposed to be called at startup time  把可序列化的类加入到集合
      */
     public static void registerClass(Class clazz) {
         registerClass(clazz, null);
@@ -41,7 +46,10 @@ public abstract class SerializableClassRegistry {
         }
         registrations.put(clazz, serializer);
     }
-
+    /**
+     * 获得可序列化的类的集合
+     * @return
+     */
     public static Map<Class, Object> getRegisteredClasses() {
         return registrations;
     }

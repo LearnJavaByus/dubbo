@@ -24,7 +24,7 @@ import java.io.IOException;
 public interface ObjectOutput extends DataOutput {
 
     /**
-     * write object.
+     * write object. 输入object类型
      *
      * @param obj object.
      */
